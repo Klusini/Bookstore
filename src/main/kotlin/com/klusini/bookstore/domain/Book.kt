@@ -4,7 +4,7 @@ import jakarta.persistence.*
 
 
 @Entity
-@Table(name =   "looks")
+@Table(name = "books")
 data class Book(
     @Id
     @Column(name = "isbn")
