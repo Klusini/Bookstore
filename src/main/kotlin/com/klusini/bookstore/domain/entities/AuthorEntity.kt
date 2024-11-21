@@ -1,11 +1,11 @@
-package com.klusini.bookstore.domain
+package com.klusini.bookstore.domain.entities
 
 import jakarta.persistence.*
 
 
 @Entity
 @Table(name = "authors")
-data class Author(
+data class AuthorEntity(
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "author_id_seq")
