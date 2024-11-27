@@ -1,5 +1,6 @@
 package com.klusini.bookstore.services.impl
 
+import com.klusini.bookstore.domain.entities.AuthorEntity
 import com.klusini.bookstore.repositories.AuthorRepository
 import com.klusini.bookstore.testAuthorEntityA
 import org.assertj.core.api.Assertions.assertThat
@@ -23,7 +24,20 @@ class AuthorServiceImplTest@Autowired constructor(
         assertThat(recalledAuthor).isNotNull()
         assertThat(recalledAuthor!!).isEqualTo(
             testAuthorEntityA(id = savedAuthor.id))
+    }
 
+    @Test
+    fun `test that list returns empty list when no authors in the database`() {
+        val result = underTest.list()
+        assertThat(result).isEmpty()
+    }
+
+    @Test
+    fun `test that list returns authors when authors present in the database`() {
+        val savedAuthor = authorRepository.save(testAuthorEntityA())
+        val expected = listOf(savedAuthor)
+        val result = underTest.list()
+        assertThat(result).isEqualTo(expected)
     }
 
 }

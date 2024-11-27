@@ -6,4 +6,6 @@ interface AuthorService {
 
     fun save(authorEntity: AuthorEntity) : AuthorEntity
 
+    fun list(): List<AuthorEntity>
+
 }
