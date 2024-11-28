@@ -1,6 +1,5 @@
 package com.klusini.bookstore.services.impl
 
-import com.klusini.bookstore.domain.entities.AuthorEntity
 import com.klusini.bookstore.repositories.AuthorRepository
 import com.klusini.bookstore.testAuthorEntityA
 import org.assertj.core.api.Assertions.assertThat
@@ -17,7 +16,7 @@ class AuthorServiceImplTest@Autowired constructor(
 
     @Test
     fun `test that save persists the Author in the database`() {
-        val savedAuthor = underTest.save(testAuthorEntityA())
+        val savedAuthor = underTest.create(testAuthorEntityA())
         assertThat(savedAuthor.id).isNotNull()
 
         val recalledAuthor = authorRepository.findByIdOrNull(savedAuthor.id!!)
@@ -38,6 +37,21 @@ class AuthorServiceImplTest@Autowired constructor(
         val expected = listOf(savedAuthor)
         val result = underTest.list()
         assertThat(result).isEqualTo(expected)
+        authorRepository.delete(savedAuthor)
+    }
+
+    @Test
+    fun `test that get returns null when author not found in database`(){
+        val result = underTest.get(999)
+        assertThat(result).isNull()
+    }
+
+    @Test
+    fun `test that get returns author when author present in the database`() {
+        val savedAuthor = authorRepository.save(testAuthorEntityA())
+        val result = underTest.get(savedAuthor.id!!)
+        assertThat(result).isEqualTo(savedAuthor)
+        authorRepository.delete(savedAuthor)
     }
 
 }
