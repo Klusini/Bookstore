@@ -1,18 +1,14 @@
 package com.klusini.bookstore.controllers
 
 import com.klusini.bookstore.domain.dto.AuthorDto
+import com.klusini.bookstore.domain.dto.AuthorUpdateRequestDto
 import com.klusini.bookstore.services.AuthorService
 import com.klusini.bookstore.toAuthorDto
 import com.klusini.bookstore.toAuthorEntity
+import com.klusini.bookstore.toAuthorUpdateRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping(path = ["/v1/authors"])
@@ -47,6 +43,16 @@ class AuthorsController(private val authorService: AuthorService){
     fun fullUpdateAuthor(@PathVariable("id") id: Long, @RequestBody authorDto: AuthorDto): ResponseEntity<AuthorDto> {
         return try {
             val updatedAuthor = authorService.fullUpdate(id, authorDto.toAuthorEntity())
+            ResponseEntity(updatedAuthor.toAuthorDto(), HttpStatus.OK)
+        } catch (ex: IllegalStateException){
+            ResponseEntity(HttpStatus.BAD_REQUEST)
+        }
+    }
+
+    @PatchMapping(path = ["/{id}"])
+    fun partialUpdateAuthor(@PathVariable("id") id: Long, @RequestBody authorUpdateRequest: AuthorUpdateRequestDto): ResponseEntity<AuthorDto> {
+        return try{
+            val updatedAuthor = authorService.partialUpdate(id, authorUpdateRequest.toAuthorUpdateRequest())
             ResponseEntity(updatedAuthor.toAuthorDto(), HttpStatus.OK)
         } catch (ex: IllegalStateException){
             ResponseEntity(HttpStatus.BAD_REQUEST)

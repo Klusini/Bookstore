@@ -1,5 +1,6 @@
 package com.klusini.bookstore.services.impl
 
+import com.klusini.bookstore.domain.AuthorUpdateRequest
 import com.klusini.bookstore.domain.entities.AuthorEntity
 import com.klusini.bookstore.repositories.AuthorRepository
 import com.klusini.bookstore.services.AuthorService
@@ -28,6 +29,19 @@ class AuthorServiceImpl(private val authorRepository: AuthorRepository ) : Autho
         check(authorRepository.existsById(id))
         val normalisedAuthor = authorEntity.copy(id=id)
         return authorRepository.save(normalisedAuthor)
+    }
+
+    @Transactional
+    override fun partialUpdate(id: Long, authorUpdate: AuthorUpdateRequest): AuthorEntity {
+        val existingAuthor = authorRepository.findByIdOrNull(id)
+        checkNotNull(existingAuthor)
+        val updatedAuthor = existingAuthor.copy(
+            name = authorUpdate.name ?: existingAuthor.name,
+            age = authorUpdate.age ?: existingAuthor.age,
+            description = authorUpdate.description ?: existingAuthor.description,
+            image = authorUpdate.image ?: existingAuthor.image,
+        )
+        return authorRepository.save(updatedAuthor)
     }
 
 }

@@ -1,5 +1,6 @@
 package com.klusini.bookstore.services
 
+import com.klusini.bookstore.domain.AuthorUpdateRequest
 import com.klusini.bookstore.domain.entities.AuthorEntity
 
 interface AuthorService {
@@ -11,4 +12,6 @@ interface AuthorService {
     fun get(id: Long): AuthorEntity?
 
     fun fullUpdate(id: Long, authorEntity: AuthorEntity): AuthorEntity
+
+    fun partialUpdate(id: Long, authorUpdate: AuthorUpdateRequest): AuthorEntity
 }

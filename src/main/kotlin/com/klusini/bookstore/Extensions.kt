@@ -1,6 +1,8 @@
 package com.klusini.bookstore
 
+import com.klusini.bookstore.domain.AuthorUpdateRequest
 import com.klusini.bookstore.domain.dto.AuthorDto
+import com.klusini.bookstore.domain.dto.AuthorUpdateRequestDto
 import com.klusini.bookstore.domain.entities.AuthorEntity
 
 fun AuthorEntity.toAuthorDto() = AuthorDto(
@@ -11,6 +13,14 @@ fun AuthorEntity.toAuthorDto() = AuthorDto(
     image = this.image,
 )
 fun AuthorDto.toAuthorEntity() = AuthorEntity(
+    id = this.id,
+    name = this.name,
+    age = this.age,
+    description = this.description,
+    image = this.image,
+)
+
+fun AuthorUpdateRequestDto.toAuthorUpdateRequest() = AuthorUpdateRequest(
     id = this.id,
     name = this.name,
     age = this.age,
