@@ -12,8 +12,10 @@ import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.transaction.annotation.Transactional
 
 @SpringBootTest
+@Transactional
 class AuthorServiceImplTest@Autowired constructor(
     val underTest: AuthorServiceImpl,
     val authorRepository: AuthorRepository
@@ -63,7 +65,6 @@ class AuthorServiceImplTest@Autowired constructor(
         val savedAuthor = authorRepository.save(testAuthorEntityA())
         val result = underTest.get(savedAuthor.id!!)
         assertThat(result).isEqualTo(savedAuthor)
-        authorRepository.delete(savedAuthor)
     }
 
     @Test
@@ -196,6 +197,26 @@ class AuthorServiceImplTest@Autowired constructor(
         val retrievedAuthor = authorRepository.findByIdOrNull(existingAuthorId)
         assertThat(retrievedAuthor).isNotNull
         assertThat(retrievedAuthor).isEqualTo(expected)
+
+    }
+
+    @Test
+    fun `test that delete deletes an existing Author in the database`(){
+        val existingAuthor = authorRepository.save(testAuthorEntityA())
+        val existingAuthorId = existingAuthor.id!!
+        underTest.delete(existingAuthorId)
+        assertThat(
+            authorRepository.existsById(existingAuthorId)
+        ).isFalse()
+    }
+
+    @Test
+    fun `test that delete deletes an non existing Author in the database`(){
+        val nonExistingAuthorId = 999L
+        underTest.delete(nonExistingAuthorId)
+        assertThat(
+            authorRepository.existsById(nonExistingAuthorId)
+        ).isFalse()
     }
 
 }

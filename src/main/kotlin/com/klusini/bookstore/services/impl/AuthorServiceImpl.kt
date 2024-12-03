@@ -4,7 +4,7 @@ import com.klusini.bookstore.domain.AuthorUpdateRequest
 import com.klusini.bookstore.domain.entities.AuthorEntity
 import com.klusini.bookstore.repositories.AuthorRepository
 import com.klusini.bookstore.services.AuthorService
-import jakarta.transaction.Transactional
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
@@ -42,6 +42,10 @@ class AuthorServiceImpl(private val authorRepository: AuthorRepository ) : Autho
             image = authorUpdate.image ?: existingAuthor.image,
         )
         return authorRepository.save(updatedAuthor)
+    }
+
+    override fun delete(id: Long) {
+        authorRepository.deleteById(id)
     }
 
 }

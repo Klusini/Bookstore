@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.test.web.servlet.*
 
 private const val AUTHORS_BASE_URL = "/v1/authors"
@@ -240,4 +241,19 @@ class AuthorsControllerTest @Autowired constructor (
             content { jsonPath("$.image", equalTo("author-image.jpeg")) }
         }
     }
+
+    @Test
+    fun `test that delete return HTTP 204 and deletes the author if present in the database`(){
+        every {
+            authorService.delete(any())
+        } answers {}
+
+        mockMvc.delete("$AUTHORS_BASE_URL/999"){
+            contentType = MediaType.APPLICATION_JSON
+            accept(MediaType.APPLICATION_JSON)
+        }.andExpect {
+            status { isNoContent() }
+        }
+    }
+
 }
