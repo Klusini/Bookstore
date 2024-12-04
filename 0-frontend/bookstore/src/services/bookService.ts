@@ -10,7 +10,7 @@ export interface BookService {
   deleteBook(isbn: string): Promise<void>;
 }
 
-export class BookServiceImpl implements BookService {
+/*export class BookServiceImpl implements BookService {
   async createUpdateBook(isbn: string, book: Book): Promise<Book> {
     const response = await fetch(`/v1/books/${isbn}`, {
       method: "PUT",
@@ -21,6 +21,32 @@ export class BookServiceImpl implements BookService {
       body: JSON.stringify(book),
     });
     handleServerException(response);
+    return (await response.json()) as Book;
+  }*/
+
+  export class BookServiceImpl implements BookService {
+  async createUpdateBook(isbn: string, book: Book): Promise<Book> {
+    console.log("Endpoint:", `/v1/books/${isbn}`);
+    console.log("Body request:", JSON.stringify(book));
+    console.log("Body request:", JSON.stringify(book.author.id));
+
+    const response = await fetch(`/v1/books/${isbn}`, {
+      method: "PUT",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(book),
+    });
+
+    console.log("Response status:", response.status);
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      console.error("Response error:", errorBody);
+      throw new Error(`HTTP error ${response.status}: ${errorBody}`);
+    }
+
     return (await response.json()) as Book;
   }
 
