@@ -17,8 +17,8 @@ import org.springframework.transaction.annotation.Transactional
 @SpringBootTest
 @Transactional
 class AuthorServiceImplTest@Autowired constructor(
-    val underTest: AuthorServiceImpl,
-    val authorRepository: AuthorRepository
+    private val underTest: AuthorServiceImpl,
+    private val authorRepository: AuthorRepository
 ) {
 
     @Test
