@@ -5,12 +5,14 @@ import com.klusini.bookstore.*
 import com.klusini.bookstore.services.BookService
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
+import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.put
 import org.springframework.test.web.servlet.result.StatusResultMatchersDsl
 
@@ -97,4 +99,71 @@ class BooksControllerTest @Autowired constructor(
             status { isInternalServerError() }
         }
     }
+
+    @Test
+    fun `test that readManyBooks returns a list of books`(){
+        val isbn = "978-040-646163-5346"
+
+        every {
+            bookService.list()
+        } answers {
+            listOf(testBookEntityA(isbn, testAuthorEntityA(1)))
+        }
+
+        mockMvc.get("/v1/books"){
+            contentType = MediaType.APPLICATION_JSON
+            accept = MediaType.APPLICATION_JSON
+        }.andExpect {
+            status { isOk() }
+            content { jsonPath("$[0].isbn", equalTo(isbn)) }
+            content { jsonPath("$[0].title", equalTo("Test Book A")) }
+            content { jsonPath("$[0].image", equalTo("book-image.jpeg")) }
+            content { jsonPath("$[0].author.id", equalTo(1)) }
+            content { jsonPath("$[0].author.name", equalTo("John Doe")) }
+            content { jsonPath("$[0].author.image", equalTo("author-image.jpeg")) }
+        }
+    }
+
+    @Test
+    fun `test that list returns no books when they do not match the author ID`(){
+        every {
+            bookService.list(any())
+        } answers {
+            emptyList()
+        }
+
+        mockMvc.get("/v1/books?author=999"){
+            contentType = MediaType.APPLICATION_JSON
+            accept = MediaType.APPLICATION_JSON
+        }.andExpect {
+            status { isOk() }
+            content { json("[]")}
+        }
+    }
+
+    @Test
+    fun `test that list returns a book when matches author ID`(){
+        val isbn = "978-040-646163-5346"
+
+        every {
+            bookService.list(1L)
+        } answers {
+            listOf(testBookEntityA(isbn, testAuthorEntityA(1L)))
+        }
+
+        mockMvc.get("/v1/books?author=1"){
+            contentType = MediaType.APPLICATION_JSON
+            accept = MediaType.APPLICATION_JSON
+        }.andExpect {
+            status { isOk() }
+            content { jsonPath("$[0].isbn", equalTo(isbn)) }
+            content { jsonPath("$[0].title", equalTo("Test Book A")) }
+            content { jsonPath("$[0].image", equalTo("book-image.jpeg")) }
+            content { jsonPath("$[0].author.id", equalTo(1)) }
+            content { jsonPath("$[0].author.name", equalTo("John Doe")) }
+            content { jsonPath("$[0].author.image", equalTo("author-image.jpeg")) }
+        }
+
+    }
+
 }

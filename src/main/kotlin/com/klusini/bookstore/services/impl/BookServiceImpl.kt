@@ -27,4 +27,10 @@ class BookServiceImpl(
         val savedBook = bookRepository.save(normalisedBook.toBookEntity(author))
         return Pair(savedBook, !isExists)
     }
+
+    override fun list(authorId: Long?): List<BookEntity> {
+        return authorId?.let {
+            bookRepository.findByAuthorEntityId(it)
+        } ?: bookRepository.findAll()
+    }
 }
