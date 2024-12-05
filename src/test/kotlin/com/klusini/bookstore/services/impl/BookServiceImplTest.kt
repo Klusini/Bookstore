@@ -112,4 +112,22 @@ class BookServiceImplTest@Autowired constructor(
         assertThat(result[0]).isEqualTo(savedBook)
     }
 
+    @Test
+    fun `test that get returns null when book not found in the database`() {
+        val result = underTest.get(BOOK_A_ISBN)
+        assertThat(result).isNull()
+    }
+
+    @Test
+    fun `test that returns a book when found in the database`() {
+        val savedAuthor = authorRepository.save(testAuthorEntityA())
+        assertThat(savedAuthor).isNotNull
+
+        val savedBook = bookRepository.save(testBookEntityA(BOOK_A_ISBN,savedAuthor))
+        assertThat(savedBook).isNotNull
+
+        val result = underTest.get(BOOK_A_ISBN)
+        assertThat(result).isEqualTo(savedBook)
+    }
+
 }

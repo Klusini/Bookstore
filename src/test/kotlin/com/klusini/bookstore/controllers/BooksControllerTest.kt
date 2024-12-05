@@ -163,6 +163,49 @@ class BooksControllerTest @Autowired constructor(
             content { jsonPath("$[0].author.name", equalTo("John Doe")) }
             content { jsonPath("$[0].author.image", equalTo("author-image.jpeg")) }
         }
+    }
+
+    @Test
+    fun `test that readOneBook returns HTTP 404 when no book found`(){
+        val isbn = "978-040-646163-5346"
+
+        every {
+            bookService.get(any())
+        } answers {
+            null
+        }
+
+        mockMvc.get("/v1/books/${isbn}") {
+            accept = MediaType.APPLICATION_JSON
+            contentType = MediaType.APPLICATION_JSON
+        }.andExpect {
+            status { isNotFound() }
+        }
+
+    }
+
+    @Test
+    fun `test that readOneBook returns HTTP 200 and a book when found`(){
+        val isbn = "978-040-646163-5346"
+
+        every {
+            bookService.get(isbn)
+        } answers {
+            testBookEntityA(isbn, testAuthorEntityA(1))
+        }
+
+        mockMvc.get("/v1/books/${isbn}") {
+            accept = MediaType.APPLICATION_JSON
+            contentType = MediaType.APPLICATION_JSON
+        }.andExpect {
+            status { isOk() }
+            content { jsonPath("$.isbn", equalTo(isbn)) }
+            content { jsonPath("$.title", equalTo("Test Book A")) }
+            content { jsonPath("$.image", equalTo("book-image.jpeg")) }
+            content { jsonPath("$.author.id", equalTo(1)) }
+            content { jsonPath("$.author.name", equalTo("John Doe")) }
+            content { jsonPath("$.author.image", equalTo("author-image.jpeg")) }
+        }
 
     }
 

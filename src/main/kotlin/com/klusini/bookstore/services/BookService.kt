@@ -8,4 +8,6 @@ interface BookService {
 
     fun list(authorId: Long?=null): List<BookEntity>
 
+    fun get(isbn: String): BookEntity?
+
 }

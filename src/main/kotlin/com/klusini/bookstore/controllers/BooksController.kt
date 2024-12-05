@@ -7,17 +7,13 @@ import com.klusini.bookstore.toBookSummary
 import com.klusini.bookstore.toBookSummaryDto
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
+@RequestMapping("/v1/books")
 class BooksController(private val bookService: BookService) {
 
-    @PutMapping(path = ["/v1/books/{isbn}"])
+    @PutMapping(path = ["/{isbn}"])
     fun createFullUpdateBook(
         @PathVariable("isbn") isbn: String,
         @RequestBody book: BookSummaryDto
@@ -35,9 +31,14 @@ class BooksController(private val bookService: BookService) {
         }
     }
 
-    @GetMapping(path = ["/v1/books"])
+    @GetMapping
     fun readManyBooks(@RequestParam("author") authorId: Long?): List<BookSummaryDto>{
         return bookService.list(authorId).map { it.toBookSummaryDto() }
     }
+
+   @GetMapping(path = ["/{isbn}"])
+   fun readOneBook(@PathVariable("isbn") isbn: String): ResponseEntity<BookSummaryDto> {
+       return bookService.get(isbn)?.let { ResponseEntity(it.toBookSummaryDto(), HttpStatus.OK) } ?: ResponseEntity(HttpStatus.NOT_FOUND)
+   }
 
 }
